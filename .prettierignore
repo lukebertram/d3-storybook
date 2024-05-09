@@ -1,0 +1,5 @@
+# includes all .gitignore entries (as long as it remains in the same folder as .prettierignore)
+
+# Ignore artifacts
+build
+coverage
