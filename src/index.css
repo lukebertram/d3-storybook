@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .anchor-start {
+    text-anchor: start;
+  }
+  .anchor-middle {
+    text-anchor: middle;
+  }
+  .anchor-end {
+    text-anchor: end;
+  }
+  .baseline-middle {
+    dominant-baseline: middle;
+  }
+}
