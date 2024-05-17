@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useIsMounted, useResizeObserver } from "usehooks-ts";
 
 export const callAccessor = (
-  accessor: Accessor,
+  accessor: (d: Record<string, unknown>) => number | string,
   d: Record<string, unknown>,
   i: number,
 ) => (typeof accessor === "function" ? accessor(d, i) : accessor);
@@ -75,7 +75,9 @@ export function useChartDimensionsPlus<T extends HTMLElement = HTMLElement>(
   const [{ width, height }, setSize] = useState<Size>(initialSize);
   const isMounted = useIsMounted();
   const previousSize = useRef<Size>({ ...initialSize });
-  const onResize = useRef<((size: Size) => void) | undefined>(undefined);
+  const onResize = useRef<((size: BoundedDimensions) => void) | undefined>(
+    undefined,
+  );
   onResize.current = options.onResize;
 
   useEffect(() => {
@@ -198,3 +200,10 @@ export const useUniqueId = (prefix = "") => {
   lastId++;
   return [prefix, lastId].join("-");
 };
+
+export const getRandomNumberInRange = (min: number, max: number) =>
+  Math.random() * (max - min) + min;
+export const getRandomValue = (arr: Array<number>): number =>
+  arr[Math.floor(getRandomNumberInRange(0, arr.length))];
+export const sentenceCase = (str: string) =>
+  [str.slice(0, 1).toUpperCase(), str.slice(1)].join("");

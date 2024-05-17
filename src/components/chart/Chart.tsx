@@ -29,7 +29,7 @@ const Chart = ({ dimensions, children }: ChartProps) => (
       <g
         transform={`translate(${dimensions.marginLeft},${dimensions.marginTop})`}
       >
-        {children}
+        {children ?? null}
       </g>
     </svg>
   </ChartContext.Provider>

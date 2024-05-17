@@ -1,9 +1,9 @@
 // Global types
-type ScatterDatum = {
+type ScatterDatum = Datum & {
   temperature: number;
   humidity: number;
 };
-type TimelineDatum = {
+type TimelineDatum = Datum & {
   temperature: number;
   date: string;
 };
@@ -22,9 +22,15 @@ type XYDatum = Datum & {
   y: number | string;
 };
 
-type Accessor = (d: Datum, i?: number) => number | string | null;
+type Datum = {
+  [key?: string]: string | number;
+};
 
-type DateAccessor = (d: DateDatum, i?: number) => Date | null;
+type;
+type NumberAccessor<T> = (d: T, i: number, data: Iterable<T>) => number;
+type Accessor<T, U> = (d: T, i: number, data: Iterable<T>) => U;
+
+type DateAccessor = Accessor<Date>;
 
 type WeatherAccessor = (d: WeatherDatum, i?: number) => number | string | null;
 
@@ -35,6 +41,9 @@ type BaseDimensions = {
   marginRight?: number;
   marginBottom?: number;
   marginLeft?: number;
+  pathwayHeight?: number;
+  pathwayBarWidth?: number;
+  pathwayBarPadding?: number;
 };
 
 type BoundedDimensions = BaseDimensions & {

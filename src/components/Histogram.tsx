@@ -11,6 +11,7 @@ import {
 } from "../utils/chartUtils";
 import { useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
+import Tooltip from "./chart/Tooltip";
 
 const DEFAULT_DIMENSIONS = {
   width: 0,
@@ -24,7 +25,14 @@ const DEFAULT_DIMENSIONS = {
 };
 
 const gradientColors = ["#9980FA", "rgb(225, 222, 243)"];
-const Histogram = ({ data, xAccessor, label }) => {
+
+export type HistogramProps = {
+  data: ScatterDatum[];
+  xAccessor: NumberAccessor<ScatterDatum>;
+  label: string;
+};
+const Histogram = ({ data, xAccessor, label }: HistogramProps) => {
+  // const [hoveredElement, setHoveredElement] = useState(null);
   // const [dimensions, setDimensions] =
   //   useState<BoundedDimensions>(DEFAULT_DIMENSIONS);
   const gradientId = useUniqueId("Histogram-gradient");
@@ -40,15 +48,24 @@ const Histogram = ({ data, xAccessor, label }) => {
 
   const numberOfThresholds = 9;
 
+  const xExtent = d3.extent(data, xAccessor);
+  if (!xExtent[0] || !xExtent[1])
+    throw new Error("Unable to generate xScale extent from supplied data");
+
   const xScale = d3
     .scaleLinear()
-    .domain(d3.extent(data, xAccessor))
+    .domain(xExtent)
     .range([0, dimensions.boundedWidth])
     .nice();
 
+  // xScale.domain() usually returns a 2 element array of numbers (the highest & lowest
+  // values of the scale's domain), but can return more when creating a
+  // a domain for a piecewise scale. The following type cast should be only require
+  // revision if this component needs to handle piecewise data in the future.
+  const xDomain = xScale.domain() as [number, number];
   const binsGenerator = d3
     .bin()
-    .domain(xScale.domain())
+    .domain(xDomain)
     .value(xAccessor)
     .thresholds(xScale.ticks(numberOfThresholds));
 
@@ -70,11 +87,23 @@ const Histogram = ({ data, xAccessor, label }) => {
     dimensions.boundedHeight - yScale(yAccessor(d));
   const keyAccessor = (_d, i: number) => i;
 
+  const handleMouseEnter = (data: ScatterDatum) => {
+    console.log("MOUSEENTER", data);
+  };
+
+  const handleMouseLeave = () => {
+    console.log("MOUSELEAVE");
+    // setHoveredElement(null);
+  };
+
   return (
     <div
-      className="Histogram h-[500px] flex-1 min-w-[500px] overflow-hidden"
+      className="Histogram relative h-[500px] min-w-[500px] flex-1 overflow-hidden"
       ref={ref}
     >
+      {/* <Tooltip isVisible={} xPos={} yPos={}>
+        Hello!
+      </Tooltip> */}
       <Chart dimensions={dimensions}>
         <defs>
           <Gradient id={gradientId} colors={gradientColors} x2="0" y2="100%" />
@@ -91,6 +120,8 @@ const Histogram = ({ data, xAccessor, label }) => {
               widthAccessor={widthAccessorScaled}
               heightAccessor={heightAccessorScaled}
               style={{ fill: `url(#${gradientId})` }}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             />
           </>
         )}

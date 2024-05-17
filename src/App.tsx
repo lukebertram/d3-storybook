@@ -4,7 +4,7 @@ import { useInterval } from "usehooks-ts";
 import Histogram from "./components/Histogram";
 
 function App() {
-  const [data, setData] = useState(getDummyData);
+  const [data, setData] = useState(getDummyData());
 
   // useInterval(() => {
   //   setData(getDummyData());
